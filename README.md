@@ -20,8 +20,7 @@ run — all in one native iOS/Android app, refreshed in real time.
 
 There's **no server baked into the app** — no build-time `.env`, no secrets
 in the source. Every URL, host, and access token is entered on-device, from
-the Configuration tab, and saved locally. Clone it, point it at your own
-stack, and it's yours.
+the Configuration tab, and saved locally.
 
 ## What it does
 
@@ -42,48 +41,9 @@ stack, and it's yours.
    `docker-compose.yml`, the Prometheus scrape config, and a `.env.example`
    — lives in [`docker/`](docker), with its own
    [setup guide](docker/README.md).
-2. **Configure the app.** Install it (below), open the **Configuration**
-   tab, and enter your server's host and service URLs. Nothing to rebuild —
-   changes apply immediately and are saved on-device.
-
-## Running the app
-
-```bash
-bun install       # or npm install
-npx expo start
-```
-
-From the Expo CLI output you can open the app in:
-
-- a [development build](https://docs.expo.dev/develop/development-builds/introduction/) (`npx expo run:ios` / `npx expo run:android`)
-- an [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/) or [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), for a quick look — Portainer/Prometheus calls need your dev machine and server to be reachable from the same network, unless you've already exposed the stack publicly
-
-Building a real device binary or an OTA update is done with [EAS](https://docs.expo.dev/eas/index.md):
-
-```bash
-bunx eas-cli build --platform ios
-```
-
-## Project structure
-
-```
-docker/            Server-side stack — see docker/README.md
-src/app/           Expo Router routes (screens live in src/screens/)
-src/screens/       Prometheus, Docker, Ping, Configuration screens
-src/api/           Prometheus, Portainer and ping HTTP clients
-src/lib/           Runtime config store + theme preference store (AsyncStorage)
-src/components/    Shared UI (themed text/view, glass card, segmented control, tabs)
-```
-
-## Scripts
-
-```bash
-npx expo start              # start the dev server
-npx expo lint                # lint
-npx tsc --noEmit             # typecheck
-npx expo-doctor              # diagnose dependency/config issues
-```
+2. **Configure the app.** Open the **Configuration** tab and enter your
+   server's host and service URLs. Nothing to rebuild — changes apply
+   immediately and are saved on-device.
 
 ## Support
 
