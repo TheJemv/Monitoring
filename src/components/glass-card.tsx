@@ -1,7 +1,7 @@
 /**
- * Tarjeta con efecto "Liquid Glass" en iOS 26+ (expo-glass-effect).
- * En Android/web, `GlassView` cae automáticamente a un `View` normal,
- * así que ahí le damos un fondo temático para que no quede transparente.
+ * Card with the "Liquid Glass" effect on iOS 26+ (expo-glass-effect).
+ * On Android/web, `GlassView` automatically falls back to a plain `View`,
+ * so we give it a themed background there so it doesn't render transparent.
  */
 
 import { GlassView } from 'expo-glass-effect';

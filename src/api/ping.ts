@@ -1,8 +1,8 @@
 /**
- * Chequeo de disponibilidad HTTP para sitios arbitrarios (los que expones
- * vía cloudflared). No es un ping ICMP real — Expo/iOS no lo permite sin
- * salir del sandbox nativo — así que medimos lo mismo que cualquier
- * servicio de "uptime monitoring": si el sitio responde y cuánto tarda.
+ * HTTP availability check for arbitrary sites (the ones you expose via
+ * cloudflared). Not a real ICMP ping — Expo/iOS doesn't allow that without
+ * leaving the native sandbox — so we measure the same thing any "uptime
+ * monitoring" service does: whether the site responds, and how fast.
  */
 
 export interface PingTarget {
@@ -13,7 +13,7 @@ export interface PingTarget {
 export interface PingResult {
   label: string;
   url: string;
-  /** true si el sitio respondió algo (aunque sea un error HTTP) — false solo si no hubo respuesta. */
+  /** true if the site responded with anything (even an HTTP error) — false only if there was no response at all. */
   online: boolean;
   statusCode: number | null;
   latencyMs: number | null;

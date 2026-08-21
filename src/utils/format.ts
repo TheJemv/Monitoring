@@ -1,8 +1,8 @@
-/** Helpers de formato compartidos entre pantallas (bytes, porcentajes, duraciones). */
+/** Formatting helpers shared across screens (bytes, percentages, durations). */
 
 const BYTE_UNITS = ['B', 'KB', 'MB', 'GB', 'TB', 'PB'] as const;
 
-/** Convierte bytes a una unidad legible, ej. `formatBytes(3_400_000_000)` → "3.2 GB". */
+/** Converts bytes to a readable unit, e.g. `formatBytes(3_400_000_000)` → "3.2 GB". */
 export function formatBytes(bytes: number, decimals = 1): string {
   if (!Number.isFinite(bytes) || bytes <= 0) return '0 B';
 
@@ -12,12 +12,12 @@ export function formatBytes(bytes: number, decimals = 1): string {
   return `${value.toFixed(exponent === 0 ? 0 : decimals)} ${BYTE_UNITS[exponent]}`;
 }
 
-/** Formatea un valor 0-100 como porcentaje, ej. `formatPercent(42.4)` → "42%". */
+/** Formats a 0-100 value as a percentage, e.g. `formatPercent(42.4)` → "42%". */
 export function formatPercent(value: number, decimals = 0): string {
   return `${value.toFixed(decimals)}%`;
 }
 
-/** Convierte segundos a una duración corta, ej. `formatDuration(93_650)` → "1d 2h". */
+/** Converts seconds to a short duration, e.g. `formatDuration(93_650)` → "1d 2h". */
 export function formatDuration(totalSeconds: number): string {
   if (!Number.isFinite(totalSeconds) || totalSeconds < 0) return '—';
 

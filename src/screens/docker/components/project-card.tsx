@@ -36,7 +36,7 @@ export function ProjectCard({ project }: { project: ComposeProject }) {
           </View>
           <View style={styles.titleGroup}>
             <ThemedText type="small" themeColor="textSecondary">
-              {project.runningCount}/{project.totalCount} activos
+              {project.runningCount}/{project.totalCount} running
             </ThemedText>
             <SymbolView
               name={{ ios: 'chevron.right', android: 'chevron_right', web: 'chevron_right' }}

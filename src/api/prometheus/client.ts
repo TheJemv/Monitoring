@@ -1,4 +1,4 @@
-/** Cliente de bajo nivel para la HTTP API de Prometheus (`/api/v1/query*`). */
+/** Low-level client for Prometheus's HTTP API (`/api/v1/query*`). */
 
 import { getAppConfig } from '@/lib/app-config';
 
@@ -19,12 +19,12 @@ function buildUrl(path: string, params: Record<string, string>): string {
 
 function assertSuccess<T>(response: PrometheusResponse<T>): PrometheusResponse<T> {
   if (response.status !== 'success') {
-    throw new ApiError(response.error ?? 'Prometheus devolvió un error desconocido');
+    throw new ApiError(response.error ?? 'Prometheus returned an unknown error');
   }
   return response;
 }
 
-/** Ejecuta una consulta PromQL instantánea (`/api/v1/query`). */
+/** Runs an instant PromQL query (`/api/v1/query`). */
 export async function promQuery(query: string, time?: Date): Promise<PrometheusQueryResponse> {
   const params: Record<string, string> = { query };
   if (time) params.time = toUnixSeconds(time);
@@ -33,7 +33,7 @@ export async function promQuery(query: string, time?: Date): Promise<PrometheusQ
   return assertSuccess(response);
 }
 
-/** Ejecuta una consulta PromQL sobre un rango de tiempo, para graficar series (`/api/v1/query_range`). */
+/** Runs a PromQL query over a time range, for plotting series (`/api/v1/query_range`). */
 export async function promQueryRange(
   query: string,
   start: Date,

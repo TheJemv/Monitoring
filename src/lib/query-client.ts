@@ -1,4 +1,4 @@
-/** Cliente único de @tanstack/react-query, compartido por toda la app. */
+/** Single @tanstack/react-query client, shared across the app. */
 
 import { QueryClient } from '@tanstack/react-query';
 

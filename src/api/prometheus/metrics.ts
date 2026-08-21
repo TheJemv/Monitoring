@@ -1,6 +1,6 @@
 /**
- * Funciones de alto nivel que traducen las consultas PromQL en datos
- * listos para usar en pantallas (números planos, no la forma cruda de Prometheus).
+ * High-level functions that translate PromQL queries into data that's
+ * ready to use in screens (plain numbers, not Prometheus's raw shape).
  */
 
 import { promQuery } from './client';
@@ -25,9 +25,9 @@ export interface ContainerMetric {
 }
 
 export interface ContainerMetrics {
-  /** Uso de CPU por contenedor, en cores. */
+  /** CPU usage per container, in cores. */
   cpu: ContainerMetric[];
-  /** Uso de memoria por contenedor, en bytes. */
+  /** Memory usage per container, in bytes. */
   memory: ContainerMetric[];
 }
 
@@ -38,13 +38,13 @@ function firstValue(results: PrometheusVectorResult[]): number | null {
   return Number.isNaN(value) ? null : value;
 }
 
-/** % de uso de CPU del host (promedio de todos los cores). */
+/** Host CPU usage % (average across all cores). */
 export async function getCpuUsagePercent(): Promise<number | null> {
   const response = await promQuery(PromQueries.cpuUsagePercent);
   return firstValue(response.data?.result ?? []);
 }
 
-/** RAM usada/total del host. */
+/** Host RAM used/total. */
 export async function getMemoryUsage(): Promise<MemoryUsage | null> {
   const [usedRes, totalRes] = await Promise.all([
     promQuery(PromQueries.memoryUsedBytes),
@@ -58,7 +58,7 @@ export async function getMemoryUsage(): Promise<MemoryUsage | null> {
   return { usedBytes, totalBytes, usedPercent: (usedBytes / totalBytes) * 100 };
 }
 
-/** Espacio en disco usado/total de un punto de montaje (ej. "/", "/mnt/storage"). */
+/** Disk space used/total for a mount point (e.g. "/", "/mnt/storage"). */
 export async function getDiskUsage(mountpoint: string): Promise<DiskUsage | null> {
   const [usedRes, totalRes] = await Promise.all([
     promQuery(PromQueries.diskUsedBytes(mountpoint)),
@@ -73,21 +73,21 @@ export async function getDiskUsage(mountpoint: string): Promise<DiskUsage | null
 }
 
 /**
- * Temperatura máxima entre los sensores hwmon del host, en °C.
- * `null` si el host no expone sensores de temperatura.
+ * Highest temperature among the host's hwmon sensors, in °C.
+ * `null` if the host doesn't expose temperature sensors.
  */
 export async function getCpuTemperatureCelsius(): Promise<number | null> {
   const response = await promQuery(PromQueries.cpuTemperatureCelsius);
   return firstValue(response.data?.result ?? []);
 }
 
-/** Segundos desde el último arranque del host. */
+/** Seconds since the host's last boot. */
 export async function getUptimeSeconds(): Promise<number | null> {
   const response = await promQuery(PromQueries.uptimeSeconds);
   return firstValue(response.data?.result ?? []);
 }
 
-/** CPU y memoria por contenedor docker compose, vía cAdvisor. */
+/** CPU and memory per docker-compose container, via cAdvisor. */
 export async function getContainerMetrics(): Promise<ContainerMetrics> {
   const [cpuRes, memRes] = await Promise.all([
     promQuery(PromQueries.containerCpuUsage),

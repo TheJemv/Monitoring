@@ -7,13 +7,13 @@ import { formatBytes, formatPercent } from '@/utils/format';
 import type { ContainerState, ContainerSummary } from '@/api';
 
 const STATE_META: Record<ContainerState, { label: string; color: string }> = {
-  running: { label: 'Activo', color: '#34C759' },
-  exited: { label: 'Detenido', color: '#FF3B30' },
-  dead: { label: 'Caído', color: '#FF3B30' },
-  paused: { label: 'Pausado', color: '#FF9500' },
-  restarting: { label: 'Reiniciando', color: '#FF9500' },
-  created: { label: 'Creado', color: '#8E8E93' },
-  removing: { label: 'Eliminando', color: '#8E8E93' },
+  running: { label: 'Running', color: '#34C759' },
+  exited: { label: 'Exited', color: '#FF3B30' },
+  dead: { label: 'Dead', color: '#FF3B30' },
+  paused: { label: 'Paused', color: '#FF9500' },
+  restarting: { label: 'Restarting', color: '#FF9500' },
+  created: { label: 'Created', color: '#8E8E93' },
+  removing: { label: 'Removing', color: '#8E8E93' },
 };
 
 export function ContainerRow({ container }: { container: ContainerSummary }) {
@@ -47,7 +47,7 @@ export function ContainerRow({ container }: { container: ContainerSummary }) {
           RAM {container.memoryUsedBytes != null ? formatBytes(container.memoryUsedBytes) : '—'}
         </ThemedText>
         <ThemedText type="small" themeColor="textSecondary">
-          Disco {container.diskBytes != null ? formatBytes(container.diskBytes) : '—'}
+          Disk {container.diskBytes != null ? formatBytes(container.diskBytes) : '—'}
         </ThemedText>
       </View>
     </Pressable>

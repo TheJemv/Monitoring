@@ -1,4 +1,4 @@
-/** Métricas generales del host (CPU, RAM, discos, temperatura, uptime), refrescadas en vivo. */
+/** Overall host metrics (CPU, RAM, disks, temperature, uptime), refreshed live. */
 
 import { useQuery } from '@tanstack/react-query';
 
@@ -12,7 +12,7 @@ import {
   type MemoryUsage,
 } from '@/api';
 
-/** Ajusta estos puntos de montaje a como los reporte tu node-exporter. */
+/** Adjust these mount points to match what your node-exporter reports. */
 const SSD_MOUNTPOINT = '/';
 const HDD_MOUNTPOINT = '/mnt/storage';
 

@@ -26,7 +26,7 @@ export function ServiceStatusRow({ name, online, latencyMs }: ServiceHealth) {
         {name}
       </ThemedText>
       <ThemedText type="small" themeColor="textSecondary">
-        {online ? `${latencyMs ?? 0} ms` : 'Sin conexión'}
+        {online ? `${latencyMs ?? 0} ms` : 'Offline'}
       </ThemedText>
     </View>
   );

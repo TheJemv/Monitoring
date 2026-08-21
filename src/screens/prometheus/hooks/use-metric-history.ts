@@ -1,4 +1,4 @@
-/** Hook genérico: serie de una métrica PromQL sobre un rango de tiempo elegible. */
+/** Generic hook: a PromQL metric's series over a selectable time range. */
 
 import { useQuery } from '@tanstack/react-query';
 

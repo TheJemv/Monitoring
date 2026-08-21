@@ -1,12 +1,12 @@
 /**
- * Logs de un contenedor vía la Docker Engine API.
+ * A container's logs via the Docker Engine API.
  *
- * Docker devuelve los logs en texto plano SOLO si el contenedor se creó con
- * TTY (`docker run -t`). El resto (la inmensa mayoría — todo lo que sale de
- * un docker-compose sin `tty: true`) viene "multiplexado": cada frame trae
- * un header de 8 bytes (1 byte de stream + 3 reservados + 4 bytes de tamaño
- * en big-endian) seguido de esos bytes de payload. Por eso primero
- * inspeccionamos el contenedor para saber qué formato esperar.
+ * Docker only returns plain-text logs if the container was created with a
+ * TTY (`docker run -t`). Everything else (the vast majority — anything from
+ * a docker-compose without `tty: true`) comes back "multiplexed": each
+ * frame carries an 8-byte header (1 stream byte + 3 reserved + 4 big-endian
+ * size bytes) followed by that many payload bytes. That's why we inspect
+ * the container first, to know which format to expect.
  * https://docs.docker.com/reference/api/engine/version/v1.41/#tag/Container/operation/ContainerAttach
  */
 
@@ -40,7 +40,7 @@ function demuxDockerLogStream(buffer: ArrayBuffer): LogLine[] {
     const size = view.getUint32(offset + 4, false);
     const payloadStart = offset + 8;
     const payloadEnd = payloadStart + size;
-    if (payloadEnd > buffer.byteLength) break; // frame incompleto, lo cortamos ahí
+    if (payloadEnd > buffer.byteLength) break; // incomplete frame, cut it off here
 
     const stream = STREAM_BY_BYTE[streamByte] ?? 'stdout';
     const text = decoder.decode(buffer.slice(payloadStart, payloadEnd));
@@ -57,7 +57,7 @@ function splitRawLogStream(buffer: ArrayBuffer): LogLine[] {
   return linesFromText('stdout', text);
 }
 
-/** Últimas `tailLines` líneas de stdout+stderr, con timestamp de Docker. */
+/** The last `tailLines` lines of stdout+stderr, with Docker's timestamp. */
 export async function getContainerLogs(id: string, tailLines = DEFAULT_TAIL_LINES): Promise<LogLine[]> {
   const [tty, buffer] = await Promise.all([
     isTtyContainer(id),

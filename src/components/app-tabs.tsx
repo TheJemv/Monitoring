@@ -13,11 +13,11 @@ export default function AppTabs() {
       indicatorColor={colors.backgroundElement}
       labelStyle={{ selected: { color: colors.text } }}>
       {/*
-        Cada pantalla ya maneja sus propios insets a mano (useSafeAreaInsets +
-        contentInset en el ScrollView, para dejar espacio también a la tab
-        bar). Sin disableAutomaticContentInsets, el ajuste automático de
-        iOS pelea con eso y el inset superior termina en 0 (el título queda
-        debajo del status bar). https://docs.expo.dev/router/advanced/native-tabs/
+        Every screen already handles its own insets by hand (useSafeAreaInsets
+        + contentInset on the ScrollView, to also leave room for the tab
+        bar). Without disableAutomaticContentInsets, iOS's automatic
+        adjustment fights with that and the top inset ends up at 0 (the
+        title sits under the status bar). https://docs.expo.dev/router/advanced/native-tabs/
       */}
       <NativeTabs.Trigger name="index" disableAutomaticContentInsets>
         <NativeTabs.Trigger.Label>Prometheus</NativeTabs.Trigger.Label>

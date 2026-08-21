@@ -12,9 +12,10 @@ import {
 } from '@/lib/app-config';
 
 /**
- * A diferencia de `EditableAppConfig` (donde Portainer es opcional, `string | undefined`),
- * el draft del form siempre trae `string` — TextInput no maneja bien un `value` `undefined`,
- * así que un Portainer sin configurar se representa como `""` mientras se edita.
+ * Unlike `EditableAppConfig` (where Portainer is optional, `string | undefined`),
+ * the form draft always carries `string` — TextInput doesn't handle an
+ * `undefined` `value` well, so an unconfigured Portainer is represented as
+ * `""` while editing.
  */
 type ConfigDraft = Record<keyof EditableAppConfig, string>;
 
@@ -42,11 +43,11 @@ function toDraft(config: EditableAppConfig): ConfigDraft {
 }
 
 /**
- * Estado del form de "Servidor" (host + URLs de Prometheus/node-exporter/
- * cAdvisor/Portainer): se edita en un draft local y solo se aplica al store
- * global con `save()`, para no romper las pantallas de métricas a medio
- * escribir una URL. La lista de sitios de ping, en cambio, se aplica de
- * inmediato — agregar/quitar uno no deja nunca un estado a medias.
+ * State for the "Server" form (host + Prometheus/node-exporter/cAdvisor/
+ * Portainer URLs): edited in a local draft and only applied to the global
+ * store with `save()`, so the metrics screens don't break mid-edit of a URL.
+ * The ping site list, on the other hand, applies immediately — adding/
+ * removing one never leaves a half-done state.
  */
 export function useConfigForm() {
   const { pingTargets } = useAppConfig();
@@ -61,9 +62,9 @@ export function useConfigForm() {
 
   const save = () => {
     const nextErrors: FieldErrors = {};
-    const urlError = 'URL inválida — debe incluir http:// o https://.';
+    const urlError = 'Invalid URL — must include http:// or https://.';
 
-    if (!draft.serverHost.trim()) nextErrors.serverHost = 'Requerido.';
+    if (!draft.serverHost.trim()) nextErrors.serverHost = 'Required.';
     if (!isValidBaseUrl(draft.prometheusUrl)) nextErrors.prometheusUrl = urlError;
     if (!isValidBaseUrl(draft.nodeExporterUrl)) nextErrors.nodeExporterUrl = urlError;
     if (!isValidBaseUrl(draft.cadvisorUrl)) nextErrors.cadvisorUrl = urlError;

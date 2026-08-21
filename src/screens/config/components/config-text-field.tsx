@@ -13,7 +13,7 @@ type ConfigTextFieldProps = Pick<
   error?: string;
 };
 
-/** Fila "label + input" usada tanto en el form de servidor/Portainer como en el de agregar sitios de ping. */
+/** "Label + input" row used both in the server/Portainer form and in the add-ping-site form. */
 export function ConfigTextField({ label, error, ...inputProps }: ConfigTextFieldProps) {
   const theme = useTheme();
 

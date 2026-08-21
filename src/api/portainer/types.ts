@@ -1,4 +1,4 @@
-/** Formas de la Docker Engine API, tal como las devuelve Portainer al hacer de proxy. */
+/** Docker Engine API shapes, as returned by Portainer acting as a proxy. */
 
 export interface DockerContainerRaw {
   Id: string;
@@ -7,9 +7,9 @@ export interface DockerContainerRaw {
   State: string;
   Status: string;
   Labels: Record<string, string>;
-  /** Solo viene si se pide `?size=true`: tamaño de la capa escribible, en bytes. */
+  /** Only present if `?size=true` was requested: size of the writable layer, in bytes. */
   SizeRw?: number;
-  /** Solo viene si se pide `?size=true`: tamaño total (capa + imagen base), en bytes. */
+  /** Only present if `?size=true` was requested: total size (layer + base image), in bytes. */
   SizeRootFs?: number;
   Created: number;
 }
@@ -27,7 +27,7 @@ export interface DockerContainerStatsRaw {
   memory_stats: {
     usage?: number;
     limit?: number;
-    // En cgroup v2 la página en caché viene como `inactive_file`, no `cache`.
+    // In cgroup v2 the cached page comes as `inactive_file`, not `cache`.
     stats?: { cache?: number; inactive_file?: number };
   };
 }
@@ -38,18 +38,18 @@ export interface ContainerSummary {
   id: string;
   name: string;
   image: string;
-  /** Label `com.docker.compose.project`, o "Sin proyecto" si no viene de un docker-compose. */
+  /** Label `com.docker.compose.project`, or "No project" if it isn't from a docker-compose. */
   project: string;
-  /** Label `com.docker.compose.service`, o el nombre del contenedor. */
+  /** Label `com.docker.compose.service`, or the container's name. */
   service: string;
   state: ContainerState;
-  /** Texto de Docker, ej. "Up 3 days" / "Exited (0) 2 hours ago". */
+  /** Docker's own text, e.g. "Up 3 days" / "Exited (0) 2 hours ago". */
   statusText: string;
-  /** null si el contenedor no está corriendo, o no se pudieron leer sus stats. */
+  /** null if the container isn't running, or its stats couldn't be read. */
   cpuPercent: number | null;
   memoryUsedBytes: number | null;
   memoryLimitBytes: number | null;
-  /** Tamaño total en disco (capa + imagen base), en bytes. */
+  /** Total size on disk (layer + base image), in bytes. */
   diskBytes: number | null;
 }
 
@@ -60,7 +60,7 @@ export interface ComposeProject {
   totalCount: number;
 }
 
-/** Solo lo que necesitamos de `/containers/{id}/json` para decidir cómo leer sus logs. */
+/** Only what we need from `/containers/{id}/json` to decide how to read its logs. */
 export interface DockerContainerInspect {
   Config: { Tty: boolean };
 }

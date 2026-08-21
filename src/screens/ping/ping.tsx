@@ -55,7 +55,7 @@ export default function Ping() {
     return (
       <ThemedView style={styles.centered}>
         <ThemedText type="small" themeColor="textSecondary">
-          Pingando sitios…
+          Pinging sites…
         </ThemedText>
       </ThemedView>
     );
@@ -65,14 +65,14 @@ export default function Ping() {
     return (
       <ThemedView style={styles.centered}>
         <ThemedText type="subtitle" style={styles.centerText}>
-          No se pudo revisar nada
+          Could not check anything
         </ThemedText>
         <ThemedText type="small" themeColor="textSecondary" style={styles.centerText}>
-          {targets.error instanceof Error ? targets.error.message : 'Error desconocido'}
+          {targets.error instanceof Error ? targets.error.message : 'Unknown error'}
         </ThemedText>
         <Pressable onPress={() => targets.refetch()} style={({ pressed }) => pressed && styles.pressed}>
           <ThemedView type="backgroundElement" style={styles.retryButton}>
-            <ThemedText type="link">Reintentar</ThemedText>
+            <ThemedText type="link">Retry</ThemedText>
           </ThemedView>
         </Pressable>
       </ThemedView>
@@ -86,20 +86,21 @@ export default function Ping() {
     <ScrollView
       style={[styles.scrollView, { backgroundColor: theme.background }]}
       contentInset={insets}
+      contentOffset={Platform.OS === 'ios' ? { x: 0, y: -insets.top } : undefined}
       contentContainerStyle={[styles.contentContainer, contentPlatformStyle]}
       refreshControl={<RefreshControl refreshing={isManualRefreshing} onRefresh={handleRefresh} />}>
       <ThemedView style={styles.container}>
         <View style={styles.header}>
           <ThemedText type="subtitle">Ping</ThemedText>
           <ThemedText type="small" themeColor="textSecondary">
-            {onlineCount}/{data.length} en línea
+            {onlineCount}/{data.length} online
           </ThemedText>
         </View>
 
         <View style={styles.controls}>
           <View style={styles.controlGroup}>
             <ThemedText type="small" themeColor="textSecondary">
-              Actualizar cada
+              Refresh every
             </ThemedText>
             <SegmentedControl options={REFRESH_OPTIONS} value={refreshOptionValue} onChange={setRefreshOptionValue} />
           </View>
@@ -109,7 +110,7 @@ export default function Ping() {
           <GlassCard>
             {data.length === 0 ? (
               <ThemedText type="small" themeColor="textSecondary">
-                No hay sitios configurados — agrégalos en la pestaña Configuration.
+                No sites configured — add some in the Configuration tab.
               </ThemedText>
             ) : (
               data.map((result) => <PingRow key={result.url} {...result} />)

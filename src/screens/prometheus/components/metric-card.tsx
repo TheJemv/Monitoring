@@ -13,7 +13,7 @@ type MetricCardProps = {
   icon: IconSet;
   value: string;
   subtitle?: string;
-  /** 0-100. Si se pasa, dibuja una barra de progreso debajo del valor. */
+  /** 0-100. If passed, draws a progress bar below the value. */
   percent?: number | null;
   accentColor?: string;
 };

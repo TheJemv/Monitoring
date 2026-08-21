@@ -11,21 +11,21 @@ import type { HistoryPoint } from '../hooks/use-metric-history';
 type MetricHistoryChartProps = {
   data: HistoryPoint[];
   accentColor?: string;
-  /** Techo fijo del eje Y (ej. 100 para %). Si se omite, gifted-charts lo calcula solo. */
+  /** Fixed Y-axis ceiling (e.g. 100 for %). If omitted, gifted-charts computes it on its own. */
   maxValue?: number;
-  /** Sufijo de las etiquetas del eje Y, ej. "%" o "°C". */
+  /** Suffix for the Y-axis labels, e.g. "%" or "°C". */
   suffix?: string;
 };
 
-/** Más de 36h de rango: mostramos fecha ("19 ago") en vez de hora ("14:32"). */
+/** Over 36h of range: show a date ("Aug 19") instead of a time ("14:32"). */
 const DATE_FORMAT_THRESHOLD_SECONDS = 36 * 60 * 60;
 
 function formatAxisLabel(timestampSeconds: number, useDateFormat: boolean): string {
   const date = new Date(timestampSeconds * 1000);
-  // hour12: false → "14:32" en vez de "02:32 p.m.".
+  // hour12: false → "14:32" instead of "2:32 PM".
   return useDateFormat
-    ? date.toLocaleDateString('es-MX', { day: 'numeric', month: 'short' })
-    : date.toLocaleTimeString('es-MX', { hour: '2-digit', minute: '2-digit', hour12: false });
+    ? date.toLocaleDateString('en-US', { day: 'numeric', month: 'short' })
+    : date.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: false });
 }
 
 export function MetricHistoryChart({ data, accentColor, maxValue, suffix }: MetricHistoryChartProps) {
@@ -39,10 +39,10 @@ export function MetricHistoryChart({ data, accentColor, maxValue, suffix }: Metr
 
   const chartData = data.map((point) => ({ value: point.value }));
 
-  // La caja que gifted-charts le da a cada xAxisLabelText es tan angosta
-  // como el espacio entre puntos, así que con rangos cortos (ej. 30m con
-  // ~30 puntos) el texto queda cortado. En vez de pelear con eso, ponemos
-  // nosotros mismos "inicio — fin" debajo del chart con un Text normal.
+  // The box gifted-charts gives each xAxisLabelText is as narrow as the
+  // spacing between points, so with short ranges (e.g. 30m with ~30
+  // points) the text gets clipped. Instead of fighting that, we render our
+  // own "start — end" labels below the chart with a plain Text.
   const useDateFormat =
     data.length > 1 && data[data.length - 1].timestamp - data[0].timestamp > DATE_FORMAT_THRESHOLD_SECONDS;
   const startLabel = data.length > 0 ? formatAxisLabel(data[0].timestamp, useDateFormat) : null;
@@ -68,9 +68,9 @@ export function MetricHistoryChart({ data, accentColor, maxValue, suffix }: Metr
             hideDataPoints
             maxValue={maxValue}
             noOfSections={4}
-            // gifted-charts decide solo cuántos decimales mostrar según qué tan
-            // poco varíen los datos (si la RAM casi no cambia en la ventana,
-            // termina mostrando "32.00000"). Lo fijamos en enteros.
+            // gifted-charts decides how many decimals to show based on how
+            // little the data varies (if RAM barely changes in the window,
+            // it ends up showing "32.00000"). We pin it to whole numbers.
             roundToDigits={0}
             yAxisLabelSuffix={suffix}
             yAxisTextStyle={{ color: theme.textSecondary, fontSize: 10 }}

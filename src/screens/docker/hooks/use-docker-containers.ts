@@ -1,4 +1,4 @@
-/** Contenedores agrupados por stack de docker-compose, vía Portainer. */
+/** Containers grouped by docker-compose stack, via Portainer. */
 
 import { useQuery } from '@tanstack/react-query';
 

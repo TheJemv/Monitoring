@@ -1,24 +1,22 @@
 /**
- * Configuración editable en runtime (pantalla "Configuration"): host del
- * servidor, URLs de Prometheus/node-exporter/cAdvisor/Portainer y la lista
- * de sitios a pingear.
+ * Runtime-editable configuration (the "Configuration" screen): server host,
+ * Prometheus/node-exporter/cAdvisor/Portainer URLs, and the list of sites to
+ * ping.
  *
- * `env.ts` (variables `EXPO_PUBLIC_*`) solo se lee al compilar el bundle,
- * así que no sirve para "cambiar el host desde la app". Este módulo guarda
- * overrides en AsyncStorage y los combina con los defaults de `env` — si el
- * usuario nunca tocó un campo, se sigue usando lo que trae el `.env`.
+ * There's no `.env` involved — every value starts blank and is set from the
+ * app itself, so the compiled binary never bakes in a personal server URL or
+ * token. Overrides are persisted to AsyncStorage.
  *
- * Es un store fuera de React (no un Context) a propósito: los clientes de
- * API (prometheus/client.ts, portainer/client.ts, health.ts) son funciones
- * planas que no pueden usar hooks, y necesitan leer la URL vigente en cada
- * llamada. Las pantallas se suscriben con `useAppConfig()`
- * (`@/hooks/use-app-config`), que envuelve este store con `useSyncExternalStore`.
+ * This is a store outside React (not a Context) on purpose: the API clients
+ * (prometheus/client.ts, portainer/client.ts, health.ts) are plain functions
+ * that can't use hooks, and need to read the current URL on every call.
+ * Screens subscribe with `useAppConfig()` (`@/hooks/use-app-config`), which
+ * wraps this store with `useSyncExternalStore`.
  */
 
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import type { PingTarget } from '@/api/ping';
-import { env } from '@/constants/env';
 import { PING_TARGETS as DEFAULT_PING_TARGETS } from '@/screens/ping/ping.constants';
 
 const STORAGE_KEY = 'monitoring-app/config/v1';
@@ -33,27 +31,27 @@ export interface AppConfig {
   pingTargets: PingTarget[];
 }
 
-/** Solo estos campos se pueden editar/guardar desde la pantalla de config. */
+/** Only these fields are editable/savable from the config screen. */
 export type EditableAppConfig = Omit<AppConfig, 'pingTargets'>;
 
-function envDefaults(): AppConfig {
+function defaults(): AppConfig {
   return {
-    serverHost: env.serverHost,
-    prometheusUrl: env.prometheusUrl,
-    nodeExporterUrl: env.nodeExporterUrl,
-    cadvisorUrl: env.cadvisorUrl,
-    portainerUrl: env.portainerUrl,
-    portainerApiToken: env.portainerApiToken,
+    serverHost: '',
+    prometheusUrl: '',
+    nodeExporterUrl: '',
+    cadvisorUrl: '',
+    portainerUrl: undefined,
+    portainerApiToken: undefined,
     pingTargets: DEFAULT_PING_TARGETS,
   };
 }
 
-/** Normaliza campos opcionales guardados como "" de vuelta a `undefined`. */
+/** Normalizes optional fields saved as `""` back to `undefined`. */
 function clean(value: string | undefined): string | undefined {
   return value && value.trim().length > 0 ? value.trim() : undefined;
 }
 
-let state: AppConfig = envDefaults();
+let state: AppConfig = defaults();
 let hydrated = false;
 const listeners = new Set<() => void>();
 
@@ -63,17 +61,17 @@ function emit() {
 
 function persist() {
   AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(state)).catch((error) => {
-    console.warn('No se pudo guardar la configuración', error);
+    console.warn('Could not save the configuration', error);
   });
 }
 
-/** Para `useSyncExternalStore`: registra un listener y devuelve cómo darlo de baja. */
+/** For `useSyncExternalStore`: registers a listener and returns how to unsubscribe. */
 export function subscribeAppConfig(listener: () => void): () => void {
   listeners.add(listener);
   return () => listeners.delete(listener);
 }
 
-/** Snapshot síncrono del estado actual — usado tanto por React como por las funciones planas de `@/api`. */
+/** Synchronous snapshot of the current state — used both by React and by the plain functions in `@/api`. */
 export function getAppConfig(): AppConfig {
   return state;
 }
@@ -82,34 +80,32 @@ export function isAppConfigHydrated(): boolean {
   return hydrated;
 }
 
-/** Lee el override guardado en AsyncStorage (si existe) y lo mezcla sobre los defaults de `.env`. Llamar una vez al iniciar la app. */
+/** Reads the saved config from AsyncStorage (if any). Call once on app startup. */
 export async function hydrateAppConfig(): Promise<void> {
   try {
     const raw = await AsyncStorage.getItem(STORAGE_KEY);
     if (raw) {
       const saved = JSON.parse(raw) as Partial<AppConfig>;
-      const defaults = envDefaults();
+      const base = defaults();
       state = {
-        serverHost: clean(saved.serverHost) ?? defaults.serverHost,
-        prometheusUrl: clean(saved.prometheusUrl) ?? defaults.prometheusUrl,
-        nodeExporterUrl: clean(saved.nodeExporterUrl) ?? defaults.nodeExporterUrl,
-        cadvisorUrl: clean(saved.cadvisorUrl) ?? defaults.cadvisorUrl,
+        serverHost: clean(saved.serverHost) ?? base.serverHost,
+        prometheusUrl: clean(saved.prometheusUrl) ?? base.prometheusUrl,
+        nodeExporterUrl: clean(saved.nodeExporterUrl) ?? base.nodeExporterUrl,
+        cadvisorUrl: clean(saved.cadvisorUrl) ?? base.cadvisorUrl,
         portainerUrl: clean(saved.portainerUrl),
         portainerApiToken: clean(saved.portainerApiToken),
-        pingTargets: Array.isArray(saved.pingTargets) && saved.pingTargets.length > 0
-          ? saved.pingTargets
-          : defaults.pingTargets,
+        pingTargets: Array.isArray(saved.pingTargets) ? saved.pingTargets : base.pingTargets,
       };
     }
   } catch (error) {
-    console.warn('No se pudo leer la configuración guardada, uso los valores del .env', error);
+    console.warn('Could not read the saved configuration, starting from an empty state', error);
   } finally {
     hydrated = true;
     emit();
   }
 }
 
-/** Guarda host/URLs (todo menos `pingTargets`, que se edita con las funciones de abajo). */
+/** Saves host/URLs (everything but `pingTargets`, which is edited with the functions below). */
 export function updateAppConfig(patch: EditableAppConfig) {
   state = {
     ...state,
@@ -139,11 +135,11 @@ export function removePingTarget(url: string) {
   setPingTargets(state.pingTargets.filter((target) => target.url !== url));
 }
 
-/** Borra los overrides guardados y vuelve a lo que diga el `.env`. */
+/** Clears the saved overrides and goes back to the blank defaults. */
 export function resetAppConfig() {
-  state = envDefaults();
+  state = defaults();
   emit();
   AsyncStorage.removeItem(STORAGE_KEY).catch((error) => {
-    console.warn('No se pudo borrar la configuración guardada', error);
+    console.warn('Could not clear the saved configuration', error);
   });
 }

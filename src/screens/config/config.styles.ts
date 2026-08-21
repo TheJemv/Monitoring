@@ -49,6 +49,21 @@ export default StyleSheet.create({
     paddingHorizontal: Spacing.three,
     borderRadius: Spacing.two,
   },
+  field: {
+    gap: Spacing.one,
+  },
+  githubButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: Spacing.two,
+    paddingVertical: Spacing.two,
+    borderRadius: Spacing.two,
+    backgroundColor: '#181717',
+  },
+  githubButtonText: {
+    color: '#ffffff',
+  },
   pressed: {
     opacity: 0.7,
   },

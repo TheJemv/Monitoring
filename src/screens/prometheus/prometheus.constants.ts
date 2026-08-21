@@ -1,11 +1,11 @@
-/** RAM física del servidor, en GiB — ajusta si cambias de hardware. */
+/** Server's physical RAM, in GiB — adjust this if you change hardware. */
 export const MEMORY_TOTAL_GIB = 32;
 
 /**
- * Opciones del selector de rango de historial. `stepSeconds` crece con el
- * rango para no pedirle a Prometheus miles de puntos, y `refetchIntervalMs`
- * baja la frecuencia de refetch mientras más largo es el rango (no tiene
- * sentido re-pedir 1 semana de datos cada 5s).
+ * Options for the history range selector. `stepSeconds` grows with the
+ * range so we don't ask Prometheus for thousands of points, and
+ * `refetchIntervalMs` slows down the refetch rate the longer the range is
+ * (no point re-fetching a week of data every 5s).
  */
 export interface HistoryRangeOption {
   label: string;
@@ -21,7 +21,7 @@ export const HISTORY_RANGE_OPTIONS: HistoryRangeOption[] = [
   { label: '12h', value: '12h', minutes: 12 * 60, stepSeconds: 10 * 60, refetchIntervalMs: 2 * 60_000 },
   { label: '24h', value: '24h', minutes: 24 * 60, stepSeconds: 15 * 60, refetchIntervalMs: 5 * 60_000 },
   {
-    label: '1 semana',
+    label: '1 week',
     value: '1w',
     minutes: 7 * 24 * 60,
     stepSeconds: 60 * 60,

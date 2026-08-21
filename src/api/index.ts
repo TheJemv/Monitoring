@@ -1,4 +1,4 @@
-/** Punto de entrada único para todo lo relacionado a APIs del servidor. */
+/** Single entry point for everything related to the server's APIs. */
 
 export * from './health';
 export * from './http';

@@ -56,11 +56,11 @@ export default function Docker() {
     return (
       <ThemedView style={styles.centered}>
         <ThemedText type="subtitle" style={styles.centerText}>
-          Falta configurar Portainer
+          Set up Portainer
         </ThemedText>
         <ThemedText type="small" themeColor="textSecondary" style={styles.centerText}>
-          Agrega Portainer a tu docker-compose del servidor, genera un access token (tu usuario → Access
-          tokens) y ponlo en tu .env como EXPO_PUBLIC_PORTAINER_URL y EXPO_PUBLIC_PORTAINER_API_TOKEN.
+          Add Portainer to the docker-compose on your server, generate an access token (your user → Access tokens),
+          and set the URL and token in the Configuration tab.
         </ThemedText>
       </ThemedView>
     );
@@ -70,26 +70,24 @@ export default function Docker() {
     return (
       <ThemedView style={styles.centered}>
         <ThemedText type="small" themeColor="textSecondary">
-          Conectando con Portainer…
+          Connecting to Portainer…
         </ThemedText>
       </ThemedView>
     );
   }
 
   if (projects.isError) {
-    console.log(projects.error.cause)
-
     return (
       <ThemedView style={styles.centered}>
         <ThemedText type="subtitle" style={styles.centerText}>
-          No se pudo conectar
+          Could not connect
         </ThemedText>
         <ThemedText type="small" themeColor="textSecondary" style={styles.centerText}>
-          {projects.error instanceof Error ? projects.error.message : 'Error desconocido'}
+          {projects.error instanceof Error ? projects.error.message : 'Unknown error'}
         </ThemedText>
         <Pressable onPress={() => projects.refetch()} style={({ pressed }) => pressed && styles.pressed}>
           <ThemedView type="backgroundElement" style={styles.retryButton}>
-            <ThemedText type="link">Reintentar</ThemedText>
+            <ThemedText type="link">Retry</ThemedText>
           </ThemedView>
         </Pressable>
       </ThemedView>
@@ -104,20 +102,21 @@ export default function Docker() {
     <ScrollView
       style={[styles.scrollView, { backgroundColor: theme.background }]}
       contentInset={insets}
+      contentOffset={Platform.OS === 'ios' ? { x: 0, y: -insets.top } : undefined}
       contentContainerStyle={[styles.contentContainer, contentPlatformStyle]}
       refreshControl={<RefreshControl refreshing={isManualRefreshing} onRefresh={handleRefresh} />}>
       <ThemedView style={styles.container}>
         <View style={styles.header}>
           <ThemedText type="subtitle">Docker</ThemedText>
           <ThemedText type="small" themeColor="textSecondary">
-            {totalRunning}/{totalContainers} contenedores activos · {data.length} stacks
+            {totalRunning}/{totalContainers} containers running · {data.length} stacks
           </ThemedText>
         </View>
 
         <View style={styles.controls}>
           <View style={styles.controlGroup}>
             <ThemedText type="small" themeColor="textSecondary">
-              Actualizar cada
+              Refresh every
             </ThemedText>
             <SegmentedControl options={REFRESH_OPTIONS} value={refreshOptionValue} onChange={setRefreshOptionValue} />
           </View>
@@ -126,7 +125,7 @@ export default function Docker() {
         <View style={styles.list}>
           {data.length === 0 ? (
             <ThemedText type="small" themeColor="textSecondary">
-              No se encontraron contenedores.
+              No containers found.
             </ThemedText>
           ) : (
             data.map((project) => <ProjectCard key={project.name} project={project} />)

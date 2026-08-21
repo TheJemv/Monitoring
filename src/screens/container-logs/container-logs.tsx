@@ -17,7 +17,7 @@ import { useTheme } from '@/hooks/use-theme';
 import styles from './container-logs.styles';
 import { useContainerLogs } from './hooks';
 
-/** Qué tan cerca del final (en px) cuenta como "está viendo lo último". */
+/** How close to the bottom (in px) counts as "looking at the latest line". */
 const STICKY_BOTTOM_THRESHOLD = 60;
 
 export default function ContainerLogs() {
@@ -31,9 +31,10 @@ export default function ContainerLogs() {
 
   const logs = useContainerLogs(id);
 
-  // El log arranca mostrando lo más reciente (abajo), como una terminal.
-  // Si el usuario se sube a leer historial, dejamos de "perseguir" el final
-  // en cada refetch para no arrancarle la lectura de las manos.
+  // The log starts showing the most recent line (at the bottom), like a
+  // terminal. If the user scrolls up to read older lines, we stop
+  // "chasing" the bottom on every refetch so we don't yank their reading
+  // position away.
   const scrollRef = useRef<ScrollView>(null);
   const isNearBottomRef = useRef(true);
 
@@ -49,8 +50,8 @@ export default function ContainerLogs() {
     }
   };
 
-  // Mismo patrón que Prometheus/Docker: el spinner nativo solo aparece con
-  // pull-to-refresh manual, no con el refetch automático de fondo.
+  // Same pattern as Prometheus/Docker: the native spinner only shows up
+  // with manual pull-to-refresh, not with the background auto-refetch.
   const [isManualRefreshing, setIsManualRefreshing] = useState(false);
   const handleRefresh = async () => {
     setIsManualRefreshing(true);
@@ -81,6 +82,7 @@ export default function ContainerLogs() {
       ref={scrollRef}
       style={[styles.scrollView, { backgroundColor: theme.background }]}
       contentInset={insets}
+      contentOffset={Platform.OS === 'ios' ? { x: 0, y: -insets.top } : undefined}
       contentContainerStyle={[styles.contentContainer, contentPlatformStyle]}
       onScroll={handleScroll}
       onContentSizeChange={handleContentSizeChange}
@@ -88,24 +90,24 @@ export default function ContainerLogs() {
       refreshControl={<RefreshControl refreshing={isManualRefreshing} onRefresh={handleRefresh} />}>
       <ThemedView style={styles.container}>
         <ThemedText type="small" themeColor="textSecondary" style={styles.subtitle}>
-          {name ?? id} · últimas 300 líneas
+          {name ?? id} · last 300 lines
         </ThemedText>
 
         {logs.isLoading && (
           <ThemedText type="small" themeColor="textSecondary">
-            Cargando logs…
+            Loading logs…
           </ThemedText>
         )}
 
         {logs.isError && (
           <ThemedText type="small" themeColor="textSecondary">
-            {logs.error instanceof Error ? logs.error.message : 'No se pudieron cargar los logs'}
+            {logs.error instanceof Error ? logs.error.message : 'Could not load the logs'}
           </ThemedText>
         )}
 
         {!logs.isLoading && !logs.isError && (
           <ThemedText type="code" themeColor="textSecondary" selectable style={styles.logText}>
-            {logText || 'Sin logs todavía.'}
+            {logText || 'No logs yet.'}
           </ThemedText>
         )}
       </ThemedView>

@@ -1,7 +1,7 @@
 /**
- * Id del "environment" de Portainer — el Docker engine que administra.
- * Confirmado con `GET /api/endpoints` (el environment "local" salió con
- * Id 3 en este servidor). Si reinstalas Portainer desde cero, vuelve a
- * verificarlo — no siempre es 1.
+ * Id of the Portainer "environment" — the Docker engine it manages.
+ * Confirm it with `GET /api/endpoints` after setting up your own Portainer
+ * (the "local" environment defaults to Id 1 on a fresh install, but isn't
+ * always — check yours before assuming).
  */
 export const PORTAINER_ENDPOINT_ID = 3;

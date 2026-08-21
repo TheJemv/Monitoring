@@ -14,7 +14,7 @@ interface PingTargetsEditorProps {
   onRemove: (url: string) => void;
 }
 
-/** Antepone `https://` si el usuario escribió solo el dominio, y valida que el resultado sea una URL real. */
+/** Prepends `https://` if the user only typed a domain, and validates the result is a real URL. */
 function normalizeUrl(raw: string): string | null {
   const trimmed = raw.trim();
   if (!trimmed) return null;
@@ -34,11 +34,11 @@ export function PingTargetsEditor({ targets, onAdd, onRemove }: PingTargetsEdito
   const handleAdd = () => {
     const normalized = normalizeUrl(url);
     if (!label.trim() || !normalized) {
-      setError('Escribe un nombre y una URL o dominio válido.');
+      setError('Enter a name and a valid URL or domain.');
       return;
     }
     if (targets.some((target) => target.url === normalized)) {
-      setError('Ese sitio ya está en la lista.');
+      setError('That site is already in the list.');
       return;
     }
     onAdd({ label: label.trim(), url: normalized });
@@ -51,7 +51,7 @@ export function PingTargetsEditor({ targets, onAdd, onRemove }: PingTargetsEdito
     <View style={styles.container}>
       {targets.length === 0 ? (
         <ThemedText type="small" themeColor="textSecondary">
-          No hay sitios configurados.
+          No sites configured yet.
         </ThemedText>
       ) : (
         <View style={styles.list}>
@@ -70,7 +70,7 @@ export function PingTargetsEditor({ targets, onAdd, onRemove }: PingTargetsEdito
                 hitSlop={8}
                 style={({ pressed }) => pressed && styles.pressed}>
                 <ThemedView type="backgroundSelected" style={styles.removeButton}>
-                  <ThemedText type="small">Quitar</ThemedText>
+                  <ThemedText type="small">Remove</ThemedText>
                 </ThemedView>
               </Pressable>
             </View>
@@ -79,10 +79,10 @@ export function PingTargetsEditor({ targets, onAdd, onRemove }: PingTargetsEdito
       )}
 
       <View style={styles.form}>
-        <ConfigTextField label="Nombre" placeholder="ej. Mi sitio" value={label} onChangeText={setLabel} />
+        <ConfigTextField label="Name" placeholder="e.g. My site" value={label} onChangeText={setLabel} />
         <ConfigTextField
           label="URL"
-          placeholder="ej. midominio.com"
+          placeholder="e.g. mydomain.com"
           value={url}
           onChangeText={setUrl}
           keyboardType="url"
@@ -90,7 +90,7 @@ export function PingTargetsEditor({ targets, onAdd, onRemove }: PingTargetsEdito
         />
         <Pressable onPress={handleAdd} style={({ pressed }) => pressed && styles.pressed}>
           <ThemedView type="backgroundSelected" style={styles.addButton}>
-            <ThemedText type="link">Agregar sitio</ThemedText>
+            <ThemedText type="link">Add site</ThemedText>
           </ThemedView>
         </Pressable>
       </View>

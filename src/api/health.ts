@@ -1,4 +1,4 @@
-/** Chequeo simple de disponibilidad de cada servicio del stack (para una pantalla de "estado"). */
+/** Simple availability check for each service in the stack (for a "status" screen). */
 
 import { getAppConfig } from '@/lib/app-config';
 
@@ -11,8 +11,8 @@ export interface ServiceHealth {
   latencyMs: number | null;
 }
 
-async function pingMetricsEndpoint(name: string, baseUrl: string, timeoutMs = 5000): Promise<ServiceHealth> {
-  const url = joinUrl(baseUrl, '/metrics');
+async function pingEndpoint(name: string, baseUrl: string, path: string, timeoutMs = 5000): Promise<ServiceHealth> {
+  const url = joinUrl(baseUrl, path);
   const controller = new AbortController();
   const timeout = setTimeout(() => controller.abort(), timeoutMs);
   const startedAt = Date.now();
@@ -27,12 +27,23 @@ async function pingMetricsEndpoint(name: string, baseUrl: string, timeoutMs = 50
   }
 }
 
-/** Estado de los tres servicios del docker-compose (Prometheus, node-exporter, cAdvisor). */
+/**
+ * Status of the docker-compose services: Prometheus, node-exporter and
+ * cAdvisor always (they're required), plus Portainer when it's configured.
+ * Portainer is checked against `/api/status` — a public, unauthenticated
+ * endpoint — instead of `/metrics`, which Portainer CE doesn't expose.
+ */
 export async function getServicesHealth(): Promise<ServiceHealth[]> {
   const config = getAppConfig();
-  return Promise.all([
-    pingMetricsEndpoint('Prometheus', config.prometheusUrl),
-    pingMetricsEndpoint('node-exporter', config.nodeExporterUrl),
-    pingMetricsEndpoint('cAdvisor', config.cadvisorUrl),
-  ]);
+  const checks = [
+    pingEndpoint('Prometheus', config.prometheusUrl, '/metrics'),
+    pingEndpoint('node-exporter', config.nodeExporterUrl, '/metrics'),
+    pingEndpoint('cAdvisor', config.cadvisorUrl, '/metrics'),
+  ];
+
+  if (config.portainerUrl) {
+    checks.push(pingEndpoint('Portainer', config.portainerUrl, '/api/status'));
+  }
+
+  return Promise.all(checks);
 }

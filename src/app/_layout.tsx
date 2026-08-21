@@ -6,29 +6,30 @@ import { useColorScheme } from 'react-native';
 
 import { AnimatedSplashOverlay } from '@/components/animated-icon';
 import AppTabs from '@/components/app-tabs';
-import { queryClient } from '@/lib/query-client';
 import { hydrateAppConfig, isAppConfigHydrated } from '@/lib/app-config';
+import { queryClient } from '@/lib/query-client';
+import { hydrateThemePreference, isThemePreferenceHydrated } from '@/lib/theme-preference';
 
 SplashScreen.preventAutoHideAsync();
 
 export default function TabLayout() {
   const colorScheme = useColorScheme();
 
-  // Los overrides guardados en Configuration (host, URLs, sitios de ping)
-  // viven en AsyncStorage. Se leen una sola vez aquí, antes de montar las
-  // tabs, para que ninguna pantalla dispare su primer fetch con los
-  // defaults del .env y luego "salte" a la URL guardada.
-  const [configReady, setConfigReady] = useState(isAppConfigHydrated());
+  // The overrides saved in Configuration (host, URLs, ping sites) and the
+  // theme preference (System/Light/Dark) both live in AsyncStorage. They're
+  // read once here, before mounting the tabs, so no screen fires its first
+  // fetch or paints the wrong theme before "jumping" to the saved value.
+  const [appReady, setAppReady] = useState(isAppConfigHydrated() && isThemePreferenceHydrated());
   useEffect(() => {
-    if (configReady) return;
-    hydrateAppConfig().then(() => setConfigReady(true));
-  }, [configReady]);
+    if (appReady) return;
+    Promise.all([hydrateAppConfig(), hydrateThemePreference()]).then(() => setAppReady(true));
+  }, [appReady]);
 
   return (
     <QueryClientProvider client={queryClient}>
       <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
         <AnimatedSplashOverlay />
-        {configReady && <AppTabs />}
+        {appReady && <AppTabs />}
       </ThemeProvider>
     </QueryClientProvider>
   );

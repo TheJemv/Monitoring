@@ -1,45 +1,45 @@
 /**
- * Consultas PromQL reutilizables contra las métricas que expone el stack:
- * node-exporter (host) y cAdvisor (contenedores docker compose).
+ * Reusable PromQL queries against the metrics the stack exposes:
+ * node-exporter (host) and cAdvisor (docker-compose containers).
  */
 
 export const PromQueries = {
-  /** % de uso de CPU promedio de todos los cores, último minuto. */
+  /** Average CPU usage % across all cores, last minute. */
   cpuUsagePercent: `100 - (avg(rate(node_cpu_seconds_total{mode="idle"}[1m])) * 100)`,
 
-  /** Memoria RAM usada, en bytes (total - disponible). */
+  /** RAM used, in bytes (total - available). */
   memoryUsedBytes: `node_memory_MemTotal_bytes - node_memory_MemAvailable_bytes`,
-  /** Memoria RAM total, en bytes. */
+  /** Total RAM, in bytes. */
   memoryTotalBytes: `node_memory_MemTotal_bytes`,
-  /** Memoria RAM usada, en GiB (para graficar contra la RAM total real del servidor). */
+  /** RAM used, in GiB (to plot against the server's actual total RAM). */
   memoryUsedGiB: `(node_memory_MemTotal_bytes - node_memory_MemAvailable_bytes) / (1024 * 1024 * 1024)`,
 
-  /** Espacio usado en un punto de montaje dado (ej. "/", "/mnt/storage"), en bytes. */
+  /** Used space on a given mount point (e.g. "/", "/mnt/storage"), in bytes. */
   diskUsedBytes: (mountpoint: string) =>
     `node_filesystem_size_bytes{mountpoint="${mountpoint}",fstype!="rootfs"} - node_filesystem_avail_bytes{mountpoint="${mountpoint}",fstype!="rootfs"}`,
-  /** Espacio total en un punto de montaje dado, en bytes. */
+  /** Total space on a given mount point, in bytes. */
   diskTotalBytes: (mountpoint: string) =>
     `node_filesystem_size_bytes{mountpoint="${mountpoint}",fstype!="rootfs"}`,
 
   /**
-   * Temperatura máxima del sensor de CPU (no de motherboard).
-   * node-exporter expone TODOS los chips hwmon (CPU, board, etc.) en
-   * `node_hwmon_temp_celsius`; esto lo cruza con `node_hwmon_chip_names`
-   * para quedarnos solo con el chip del procesador (Intel `coretemp`,
-   * AMD `k10temp`/`zenpower`).
+   * Highest reading from the CPU temperature sensor (not the motherboard's).
+   * node-exporter exposes ALL hwmon chips (CPU, board, etc.) under
+   * `node_hwmon_temp_celsius`; this joins it with `node_hwmon_chip_names`
+   * to keep only the processor's chip (Intel `coretemp`, AMD
+   * `k10temp`/`zenpower`).
    *
-   * Si tu servidor usa otro driver de sensores para la CPU, revisa los
-   * nombres reales con `curl http://<ip>:9100/metrics | grep hwmon_chip_names`
-   * y ajusta el regex de `chip_name` aquí.
+   * If your server uses a different sensor driver for the CPU, check the
+   * real names with `curl http://<ip>:9100/metrics | grep hwmon_chip_names`
+   * and adjust the `chip_name` regex here.
    */
   cpuTemperatureCelsius: `max(node_hwmon_temp_celsius * on(chip) group_left() (node_hwmon_chip_names{chip_name=~"coretemp|k10temp|zenpower"} * 0 + 1))`,
 
-  /** Segundos desde el último arranque del host. */
+  /** Seconds since the host's last boot. */
   uptimeSeconds: `node_time_seconds - node_boot_time_seconds`,
 
-  /** CPU (cores) por contenedor, último minuto, vía cAdvisor. */
+  /** CPU (cores) per container, last minute, via cAdvisor. */
   containerCpuUsage: `sum by (name) (rate(container_cpu_usage_seconds_total{name!=""}[1m]))`,
 
-  /** Memoria usada (bytes) por contenedor, vía cAdvisor. */
+  /** Memory used (bytes) per container, via cAdvisor. */
   containerMemoryUsage: `sum by (name) (container_memory_usage_bytes{name!=""})`,
 } as const;

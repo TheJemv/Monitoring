@@ -1,4 +1,4 @@
-/** Disponibilidad de Prometheus / node-exporter / cAdvisor. */
+/** Availability of Prometheus / node-exporter / cAdvisor. */
 
 import { useQuery } from '@tanstack/react-query';
 
