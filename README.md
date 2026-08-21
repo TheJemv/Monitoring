@@ -39,8 +39,8 @@ the Configuration tab, and saved locally.
 
 1. **Stand up the stack on your server.** Everything needed — the
    `docker-compose.yml`, the Prometheus scrape config, and a `.env.example`
-   — lives in [`docker/`](docker), with its own
-   [setup guide](docker/README.md).
+   — lives in [Monitoring-Docker](https://github.com/TheJemv/Monitoring-Docker),
+   with its own setup guide.
 2. **Configure the app.** Open the **Configuration** tab and enter your
    server's host and service URLs. Nothing to rebuild — changes apply
    immediately and are saved on-device.
