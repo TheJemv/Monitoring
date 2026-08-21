@@ -5,9 +5,13 @@ node_modules/
 
 # Expo
 .expo/
+.claude/
+.vscode/
+CLAUDE.md
 dist/
 web-build/
 expo-env.d.ts
+AGENTS.md
 
 # Native
 .kotlin/
@@ -31,6 +35,7 @@ yarn-error.*
 *.pem
 
 # local env files
+.env
 .env*.local
 
 # typescript
