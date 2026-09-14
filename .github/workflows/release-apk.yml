@@ -1,0 +1,56 @@
+name: Release APK
+
+# Al empujar un tag "v*" (p. ej. `git tag v1.2.0 && git push --tags`):
+#   1. compila el APK en EAS (perfil `preview`)
+#   2. lo descarga
+#   3. crea un GitHub Release con el APK adjunto
+#
+# Requiere el secret EXPO_TOKEN en el repo:
+#   expo.dev -> Account settings -> Access tokens -> crear token
+#   GitHub -> Settings -> Secrets and variables -> Actions -> New repository secret
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: oven-sh/setup-bun@v2
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install dependencies
+        run: bun install --frozen-lockfile
+
+      - name: Setup EAS
+        uses: expo/expo-github-action@v8
+        with:
+          eas-version: latest
+          token: ${{ secrets.EXPO_TOKEN }}
+
+      - name: Build APK on EAS
+        run: |
+          eas build --platform android --profile preview --non-interactive --wait --json > build.json
+          URL=$(jq -r '.[0].artifacts.applicationArchiveUrl // .[0].artifacts.buildUrl' build.json)
+          echo "APK_URL=$URL" >> "$GITHUB_ENV"
+
+      - name: Download APK
+        run: curl -L -o "Monitoring-${{ github.ref_name }}.apk" "$APK_URL"
+
+      - name: Create GitHub Release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release create "${{ github.ref_name }}" \
+            "Monitoring-${{ github.ref_name }}.apk" \
+            --title "${{ github.ref_name }}" \
+            --generate-notes

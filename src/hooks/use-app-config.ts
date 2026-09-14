@@ -1,6 +1,10 @@
-import { useSyncExternalStore } from 'react';
+import { useSyncExternalStore } from "react";
 
-import { type AppConfig, getAppConfig, subscribeAppConfig } from '@/lib/app-config';
+import {
+  type AppConfig,
+  getAppConfig,
+  subscribeAppConfig,
+} from "@/lib/app-config";
 
 /** Config vigente (overrides guardados + defaults del `.env`). Re-renderiza cuando la pantalla de Configuration guarda cambios. */
 export function useAppConfig(): AppConfig {

@@ -1,7 +1,6 @@
 import { StyleSheet, TextInput, View, type TextInputProps } from 'react-native';
 
 import { ThemedText } from '@/components/themed-text';
-import { ThemedView } from '@/components/themed-view';
 import { Spacing } from '@/constants/theme';
 import { useTheme } from '@/hooks/use-theme';
 
@@ -22,7 +21,11 @@ export function ConfigTextField({ label, error, ...inputProps }: ConfigTextField
       <ThemedText type="small" themeColor="textSecondary">
         {label}
       </ThemedText>
-      <ThemedView type="backgroundElement" style={styles.inputWrapper}>
+      <View
+        style={[
+          styles.inputWrapper,
+          { backgroundColor: theme.background, borderColor: theme.backgroundSelected },
+        ]}>
         <TextInput
           autoCapitalize="none"
           autoCorrect={false}
@@ -30,7 +33,7 @@ export function ConfigTextField({ label, error, ...inputProps }: ConfigTextField
           style={[styles.input, { color: theme.text }]}
           {...inputProps}
         />
-      </ThemedView>
+      </View>
       {error ? (
         <ThemedText type="small" style={styles.error}>
           {error}
@@ -46,8 +49,15 @@ const styles = StyleSheet.create({
   },
   inputWrapper: {
     borderRadius: Spacing.two,
+    borderWidth: 1,
     paddingHorizontal: Spacing.three,
     paddingVertical: Spacing.two,
+    // Raised "box" look: soft shadow on iOS, elevation on Android.
+    shadowColor: '#000000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.12,
+    shadowRadius: 3,
+    elevation: 2,
   },
   input: {
     fontSize: 16,

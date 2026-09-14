@@ -23,6 +23,7 @@ export default function AppTabs() {
         <NativeTabs.Trigger.Label>Prometheus</NativeTabs.Trigger.Label>
         <NativeTabs.Trigger.Icon
           sf={{ default: "chart.bar", selected: "chart.bar.fill" }}
+          md="bar_chart"
           renderingMode="template"
         />
       </NativeTabs.Trigger>
@@ -31,6 +32,7 @@ export default function AppTabs() {
         <NativeTabs.Trigger.Label>Docker</NativeTabs.Trigger.Label>
         <NativeTabs.Trigger.Icon
           sf={{ default: "shippingbox", selected: "shippingbox.fill" }}
+          md="inventory_2"
           renderingMode="template"
         />
       </NativeTabs.Trigger>
@@ -39,6 +41,7 @@ export default function AppTabs() {
         <NativeTabs.Trigger.Label>Ping</NativeTabs.Trigger.Label>
         <NativeTabs.Trigger.Icon
           sf={{ default: "antenna.radiowaves.left.and.right", selected: "antenna.radiowaves.left.and.right" }}
+          md="wifi_tethering"
           renderingMode="template"
         />
       </NativeTabs.Trigger>
@@ -47,6 +50,7 @@ export default function AppTabs() {
         <NativeTabs.Trigger.Label>Configuration</NativeTabs.Trigger.Label>
         <NativeTabs.Trigger.Icon
           sf={{ default: "gearshape", selected: "gearshape.fill" }}
+          md="settings"
           renderingMode="template"
         />
       </NativeTabs.Trigger>
